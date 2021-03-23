@@ -60,7 +60,14 @@ function createCountries() {
 		virar a carta:
 			umaCarta.classList.remove("escondida");
     */
-
+	 let umaCarta = document.createElement("div");
+	 umaCarta.classList.add("carta");
+	 umaCarta.style.backgroundPositionX=faces[0].x;
+	 umaCarta.style.backgroundPositionX=faces[0].y;
+	 umaCarta.style.left=CARDSIZE*2 +"px"
+	 umaCarta.style.top=CARDSIZE*0 +"px"
+	 game.stage.appendChild(umaCarta);
+	 
  
 }
 
@@ -73,6 +80,14 @@ function render() {
 // baralha as cartas no tabuleiro
 function scramble() {
  
+}
+
+function tempo(){
+	let contador = 0
+	let timeHandler = setInterval(()=>{
+		contador++
+		document.getElementById("time").value = contador;
+	},1000)
 }
 
 
