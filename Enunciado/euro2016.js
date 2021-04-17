@@ -40,7 +40,7 @@ function init() {
 	setupAudio(); 		// configurar o audio
 	getFaces(); 		// calcular as faces e guardar no array faces
 	createCountries();	// criar países
-	//scramble();
+	scramble();
 	game.sounds.background.play();
 	timer();
 	//completar
@@ -72,15 +72,16 @@ function createCountries() {
 			umaCarta.style.backgroundPositionY = faces[contador].y;
 			umaCarta.style.left = CARDSIZE * j + "px";
 			umaCarta.style.top = CARDSIZE * i + "px";
-			//umaCarta.classList.add("escondida");
+			umaCarta.classList.add("escondida");
 			game.stage.appendChild(umaCarta);
 			game.board[i][j] = umaCarta;
+			umaCarta.addEventListener("click",()=>{
+				umaCarta.classList.remove("escondida");
+			});
+
 			contador++;
 		}
 	}
-	
-	
-	//game.stage[0][0]= umaCarta;
 	
 }
 
@@ -92,17 +93,24 @@ function render() {
 
 // baralha as cartas no tabuleiro
 function scramble() {
-	
 	let contador= 0;
-	let maxCount=60;
-	
+	let maxCount=5;
 	let timeHandler = setInterval(() => {
-		contador++;
-		umaCarta.style.left = (CARDSIZE * Math.floor(Math.random()*8)) + "px";
-		umaCarta.style.top = (CARDSIZE * Math.floor(Math.random()*6)) + "px";
-		if(contador=== maxCount){
+		for(let i = 0; i<ROWS ; i++){
+			for(let j = 0; j < COLS ; j++){
+				let umaCarta = game.board[i][j];
+				umaCarta.classList.remove("escondida");
+				umaCarta.style.left = (CARDSIZE * Math.floor(Math.random()*8)) + "px";
+				umaCarta.style.top = (CARDSIZE * Math.floor(Math.random()*6)) + "px";
+				setTimeout(()=>{
+					umaCarta.classList.add("escondida");
+				},2500);
+			}
+		}
+		if(contador === maxCount){
 			clearInterval(timeHandler);
 		}
+		contador++;
 	},500)
 }
 
