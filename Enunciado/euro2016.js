@@ -19,8 +19,8 @@ const ROWS = 6;
 const COLS = 8;
 
 game.sounds = sounds; // Adicionar os sons sons do jogo ao objeto game.
-game.board  = Array(COLS).fill().map(() => Array(ROWS)); // criação do tabuleiro como um array de 6 linhas x 8 colunas
- 
+game.board = Array(COLS).fill().map(() => Array(ROWS)); // criação do tabuleiro como um array de 6 linhas x 8 colunas
+
 // Representa a imagem de uma carta de um país. Esta definição é apenas um modelo para outros objectos que sejam criados
 // com esta base através de let umaFace = Object.create(face).
 const face = {
@@ -31,7 +31,7 @@ const face = {
 
 const CARDSIZE = 100; 	// tamanho da carta (altura e largura)
 let faces = []; 		// Array que armazena objectos face que contêm posicionamentos da imagem e códigos dos paises
- 
+
 
 window.addEventListener("load", init, false);
 
@@ -40,8 +40,9 @@ function init() {
 	setupAudio(); 		// configurar o audio
 	getFaces(); 		// calcular as faces e guardar no array faces
 	createCountries();	// criar países
+	//scramble();
 	game.sounds.background.play();
-	 
+	timer();
 	//completar
 }
 
@@ -59,35 +60,65 @@ function createCountries() {
 			
 		virar a carta:
 			umaCarta.classList.remove("escondida");
-    */
-	 let umaCarta = document.createElement("div");
-	 umaCarta.classList.add("carta");
-	 umaCarta.style.backgroundPositionX=faces[0].x;
-	 umaCarta.style.backgroundPositionX=faces[0].y;
-	 umaCarta.style.left=CARDSIZE*2 +"px"
-	 umaCarta.style.top=CARDSIZE*0 +"px"
-	 game.stage.appendChild(umaCarta);
-	 
- 
+	*/
+	let contador = 0;
+	let maxContador = 24; 
+	for(let i = 0; i<ROWS ; i++){
+		for(let j = 0; j<COLS ; j++){
+			if(contador===maxContador){contador=0;}
+			let umaCarta = document.createElement("div");
+			umaCarta.classList.add("carta");
+			umaCarta.style.backgroundPositionX = faces[contador].x;
+			umaCarta.style.backgroundPositionY = faces[contador].y;
+			umaCarta.style.left = CARDSIZE * j + "px";
+			umaCarta.style.top = CARDSIZE * i + "px";
+			//umaCarta.classList.add("escondida");
+			game.stage.appendChild(umaCarta);
+			game.board[i][j] = umaCarta;
+			contador++;
+		}
+	}
+	
+	
+	//game.stage[0][0]= umaCarta;
+	
 }
 
 // Adicionar as cartas do tabuleiro à stage
 function render() {
-	 
-}
 
+	
+}
 
 // baralha as cartas no tabuleiro
 function scramble() {
- 
+	
+	let contador= 0;
+	let maxCount=60;
+	
+	let timeHandler = setInterval(() => {
+		contador++;
+		umaCarta.style.left = (CARDSIZE * Math.floor(Math.random()*8)) + "px";
+		umaCarta.style.top = (CARDSIZE * Math.floor(Math.random()*6)) + "px";
+		if(contador=== maxCount){
+			clearInterval(timeHandler);
+		}
+	},500)
 }
 
-function tempo(){
-	let contador = 0
-	let timeHandler = setInterval(()=>{
-		contador++
+function timer() {
+	
+	let contador = 0;
+	let maxCount = 60;
+	let timeHandler = setInterval(() => {
+		contador++;
 		document.getElementById("time").value = contador;
-	},1000)
+		if (contador === maxCount - 10) document.getElementById("time").classList.add("warning");
+		if (contador === maxCount) {
+			clearInterval(timeHandler);
+			document.getElementById("time").classList.remove("warning");
+		}
+	}, 1000)
 }
 
 
@@ -96,7 +127,7 @@ function tempo(){
 /* ------------------------------------------------------------------------------------------------  
  ** /!\ NÃO MODIFICAR ESTAS FUNÇÕES /!\
 -------------------------------------------------------------------------------------------------- */
- 
+
 // configuração do audio
 function setupAudio() {
 	game.sounds.background = document.querySelector("#backgroundSnd");
@@ -106,7 +137,7 @@ function setupAudio() {
 	game.sounds.win = document.querySelector("#goalSnd");
 
 	// definições de volume;
-	game.sounds.background.volume=0.05;  // o volume varia entre 0 e 1
+	game.sounds.background.volume = 0.05;  // o volume varia entre 0 e 1
 
 	// nesta pode-se mexer se for necessário acrescentar ou configurar mais sons
 
@@ -114,7 +145,7 @@ function setupAudio() {
 
 // calcula as coordenadas das imagens da selecao de cada país e atribui um código único
 function getFaces() {
-/* NÂO MOFIFICAR ESTA FUNCAO */
+	/* NÂO MOFIFICAR ESTA FUNCAO */
 	let offsetX = 1;
 	let offsetY = 1;
 	for (let i = 0; i < 5; i++) {
@@ -131,6 +162,6 @@ function getFaces() {
 	}
 }
 
-/* ------------------------------------------------------------------------------------------------  
+/* ------------------------------------------------------------------------------------------------
  ** /!\ NÃO MODIFICAR ESTAS FUNÇÕES /!\
 -------------------------------------------------------------------------------------------------- */
