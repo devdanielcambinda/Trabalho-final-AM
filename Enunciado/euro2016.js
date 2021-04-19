@@ -7,6 +7,8 @@
  const game = {}; // encapsula a informação de jogo. Está vazio mas vai-se preenchendo com definições adicionais.
 
  const arrayTentativas = [];
+ const arrayViradas = [];
+ let virada = false;
  // sons do jogo
  const sounds = {
 	 background: null,
@@ -77,32 +79,33 @@
 			 umaCarta.classList.add("escondida"); // Esconde a carta, adicionando-a à classe "escondida"
 			 game.stage.appendChild(umaCarta); // Adiciona um filho ao game.stage
 			 game.board[i][j] = umaCarta; //Define a carta no array game.board[][]
-			 umaCarta.addEventListener("click",()=>{ // Adiciona o evento "click" a cada carta
-				 if(arrayTentativas.length >= 2 ) return;
-				 if(!umaCarta.classList.contains("escondida")) return;
-				 umaCarta.classList.remove("escondida");
-				 arrayTentativas.push(umaCarta);
-				 if(arrayTentativas[1]){
-					 if(!(arrayTentativas[0].style.backgroundPositionX === arrayTentativas[1].style.backgroundPositionX) || !(arrayTentativas[0].style.backgroundPositionY===arrayTentativas[1].style.backgroundPositionY)){
-						 setTimeout(()=>{
-							 arrayTentativas[0].classList.add("escondida");
-							 arrayTentativas[1].classList.add("escondida");
-							 arrayTentativas.pop();
-							 arrayTentativas.pop();
-						 },500);
-					 }else{
-						 arrayTentativas.pop();
-						 arrayTentativas.pop();
-					 }
-				 }
-			 });
- 
+			 umaCarta.addEventListener("click",flipCard); // Adiciona o evento "click" a cada carta
 			 contador++; 
 		 }
 	 }
 	 
  }
  
+ function flipCard(e){
+	let umaCarta = e.path[0];
+	if(arrayTentativas.length >= 2 ) return;
+	if(!umaCarta.classList.contains("escondida")) return;
+	umaCarta.classList.remove("escondida");
+	arrayTentativas.push(umaCarta);
+	if(arrayTentativas[1]){
+		if(!(arrayTentativas[0].style.backgroundPositionX === arrayTentativas[1].style.backgroundPositionX) || !(arrayTentativas[0].style.backgroundPositionY===arrayTentativas[1].style.backgroundPositionY)){
+			setTimeout(()=>{
+				arrayTentativas[0].classList.add("escondida");
+				arrayTentativas[1].classList.add("escondida");
+				arrayTentativas.pop();
+				arrayTentativas.pop();
+			},500);
+		}else{
+			arrayViradas.push(arrayTentativas.pop());
+			arrayViradas.push(arrayTentativas.pop());
+		}
+	}
+ }
  // Adicionar as cartas do tabuleiro à stage
  function render() {
  
@@ -115,25 +118,31 @@
 	 let maxCount=5;
 	 let scrambleT = setInterval(() => {
 		 for(let i = 0; i<ROWS ; i++){ // Vai percorrer o array para baralhar todas as cartas
-			 for(let j = 0; j < COLS ; j++){
-				 let posLeft = Math.floor(Math.random()*8); // Gera duas coordenadas random para a nova posição da carta
-				 let posTop = Math.floor(Math.random()*6);
-				 let umaCarta = game.board[i][j]; // Vai buscar a carta da origem
-				 let carta = game.board[posTop][posLeft]; // Vai buscar a carta da posição para onde a carta original vai
-				 umaCarta.classList.remove("escondida"); // Remove a classe escondida, ou seja, mostra a carta virada
-				 carta.classList.remove("escondida");
-				 umaCarta.style.left = CARDSIZE * posLeft + "px"; // Define a nova posição no ecrã
-				 umaCarta.style.top = CARDSIZE * posTop + "px";
-				 carta.style.left = CARDSIZE * j + "px";
-				 carta.style.top = CARDSIZE * i + "px";
-				 game.board[i][j] = carta; // Troca as cartas no array game.board[][]
-				 game.board[posTop][posLeft] = umaCarta; //
-				 setTimeout(()=>{
-					 umaCarta.classList.add("escondida"); // Vai novamente esconder as cartas
-					 carta.classList.add("escondida");
-				 },2000); 
-			 }
+			 for(let j = 0; j < COLS ; j++){	
+				virada=false;
+				let umaCarta = game.board[i][j]; // Vai buscar a carta da origem
+		/* 		for(let k=0;k<arrayViradas.length;k++){
+					if(arrayViradas[k].style.backgroundPositionX === umaCarta.style.backgroundPositionX && arrayViradas[k].style.backgroundPositionY === umaCarta.style.backgroundPositionY) virada = true;
+				}
+				if(virada){return;} */
+				let posLeft = Math.floor(Math.random()*8); // Gera duas coordenadas random para a nova posição da carta
+				let posTop = Math.floor(Math.random()*6);
+				let carta = game.board[posTop][posLeft]; // Vai buscar a carta da posição para onde a carta original vai
+				umaCarta.classList.remove("escondida"); // Remove a classe escondida, ou seja, mostra a carta virada
+				carta.classList.remove("escondida");
+				umaCarta.style.left = CARDSIZE * posLeft + "px"; // Define a nova posição no ecrã
+				umaCarta.style.top = CARDSIZE * posTop + "px";
+				carta.style.left = CARDSIZE * j + "px";
+				carta.style.top = CARDSIZE * i + "px";
+				game.board[i][j] = carta; // Troca as cartas no array game.board[][]
+				game.board[posTop][posLeft] = umaCarta; //
+				setTimeout(()=>{
+					umaCarta.classList.add("escondida"); // Vai novamente esconder as cartas
+					carta.classList.add("escondida");
+				},2500);
+			 
 		 }
+		}
 		 if(contador === maxCount){
 			 clearInterval(scrambleT); //Quando o contador atingir o maxCount definido, acaba o setInterval()
 		 }
